@@ -35,3 +35,5 @@ compilesquash:
 	cp config.yaml.example OS/RootFS/etc/gh/config.yaml
 	cp topics.yaml OS/RootFS/etc/gh/topics.yaml
 	mksquashfs OS/RootFS dist/openwrt-ar71xx-generic-cus531-16M-rootfs-squashfs.bin -comp xz -noappend -always-use-fragments
+fakeserial:
+	socat -d -d pty,raw,echo=0 pty,raw,echo=0

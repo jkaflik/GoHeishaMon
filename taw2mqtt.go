@@ -5,6 +5,7 @@ import (
 	"log"
 	"time"
 
+	"github.com/alexflint/go-arg"
 	"github.com/tarm/serial"
 )
 
@@ -19,11 +20,18 @@ var config configStruct
 var serialPort *serial.Port
 var commandsChannel chan []byte
 
+var args struct {
+	ConfigFile string `arg:"-c,--config" help:"config file path" default:"config.yaml"`
+	TopicsFile string `arg:"-t,--topics" help:"topics file path" default:"topics.yaml"`
+}
+
 func main() {
+	arg.MustParse(&args)
+
 	log.SetFlags(log.Ldate | log.Ltime | log.Lshortfile)
 	log.Println("GoHeishaMon loading...")
-	go updateConfigLoop()
-	config = readConfig()
+	go updateConfigLoop(args.ConfigFile)
+	config = readConfig(args.ConfigFile)
 
 	serialConfig := &serial.Config{Name: config.Device, Baud: 9600, Parity: serial.ParityEven, StopBits: serial.Stop1, ReadTimeout: serialTimeout}
 	var err error
@@ -35,7 +43,7 @@ func main() {
 	log.Println("Serial port open")
 
 	commandsChannel = make(chan []byte, 100)
-	loadTopics()
+	loadTopics(args.TopicsFile)
 	if config.OptionalPCB {
 		loadOptionalPCB()
 	}

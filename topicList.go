@@ -3,7 +3,6 @@ package main
 import (
 	"io/ioutil"
 	"log"
-	"runtime"
 
 	"gopkg.in/yaml.v2"
 )
@@ -27,15 +26,8 @@ type topicData struct {
 	currentValue   string
 }
 
-func loadTopics() {
+func loadTopics(topicFile string) {
 	log.Print("Loading topic data...")
-	var topicFile string
-	if runtime.GOOS == "windows" {
-		topicFile = topicsFileWindows
-	} else {
-		topicFile = topicsFileOther
-	}
-
 	data, err := ioutil.ReadFile(topicFile)
 	if err != nil {
 		logErrorPause(err)

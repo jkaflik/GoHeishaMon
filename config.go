@@ -9,7 +9,6 @@ import (
 	"log"
 	"os"
 	"os/exec"
-	"runtime"
 	"strings"
 	"time"
 
@@ -55,13 +54,6 @@ func getPcbStatusTopic(name string) string {
 	return fmt.Sprintf("%s/%s", config.mqttPcbValuesTopic, name)
 }
 
-func getConfigFile() string {
-	if runtime.GOOS != "windows" {
-		return "/etc/gh/config.yaml"
-	}
-	return "config.yaml"
-}
-
 func logErrorPause(msg error) {
 	log.Println(msg)
 	log.Println("Cannot continue - awaiting new config")
@@ -70,13 +62,11 @@ func logErrorPause(msg error) {
 	}
 }
 
-func readConfig() configStruct {
-	var configFile = getConfigFile()
-
-	_, err := os.Stat(configFile)
+func readConfig(name string) configStruct {
+	_, err := os.Stat(name)
 	if err != nil {
-		log.Printf("Config file is missing: %s ", configFile)
-		updateConfig()
+		log.Printf("Config file is missing: %s ", name)
+		updateConfig(name)
 		// it's either it reboots or we can't continue
 		for {
 			time.Sleep(10 * time.Second)
@@ -85,7 +75,7 @@ func readConfig() configStruct {
 
 	var config configStruct
 
-	data, err := ioutil.ReadFile(configFile)
+	data, err := ioutil.ReadFile(name)
 	if err != nil {
 		logErrorPause(err)
 	}
@@ -105,8 +95,7 @@ func readConfig() configStruct {
 	return config
 }
 
-func updateConfig() {
-	var configfile = getConfigFile()
+func updateConfig(name string) {
 	log.Println("Config updater - checking USB media")
 	err := exec.Command("/usr/bin/usb_mount.sh").Run()
 	if err != nil {
@@ -118,12 +107,12 @@ func updateConfig() {
 	if err != nil {
 		return
 	}
-	if !bytes.Equal(getFileChecksum(configfile), getFileChecksum("/mnt/usb/GoHeishaMonConfig.new")) {
+	if !bytes.Equal(getFileChecksum(name), getFileChecksum("/mnt/usb/GoHeishaMonConfig.new")) {
 		log.Println("Updated configuration detected on USB media... will reboot")
 
-		err = exec.Command("/bin/cp", "/mnt/usb/GoHeishaMonConfig.new", configfile).Run()
+		err = exec.Command("/bin/cp", "/mnt/usb/GoHeishaMonConfig.new", name).Run()
 		if err != nil {
-			log.Printf("Can't update config file %s", configfile)
+			log.Printf("Can't update config file %s", name)
 			return
 		}
 		exec.Command("sync").Run()
@@ -142,9 +131,9 @@ func getFileChecksum(f string) []byte {
 	return hash.Sum(nil)
 }
 
-func updateConfigLoop() {
+func updateConfigLoop(name string) {
 	for {
-		updateConfig()
+		updateConfig(name)
 		time.Sleep(time.Minute * 5)
 	}
 }
