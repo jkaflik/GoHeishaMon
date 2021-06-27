@@ -39,7 +39,7 @@ func sendCommand(command []byte) {
 	if err != nil {
 		log.Println(err)
 	}
-	logHex(command)
+	logHex("command", command)
 }
 
 func readSerial(mclient mqtt.Client) {
@@ -63,7 +63,7 @@ func readSerial(mclient mqtt.Client) {
 
 	if data[0] != 113 { //wrong header received!
 		log.Println("Received bad header. Ignoring this data!")
-		logHex(data[:n])
+		logHex("bad header", data[:n])
 		return
 	}
 
@@ -71,15 +71,14 @@ func readSerial(mclient mqtt.Client) {
 
 		if (n > int(data[1]+3)) || (n >= maxDataLength) {
 			log.Println("Received more data than header suggests! Ignoring this as this is bad data.")
-			logHex(data[:n])
+			logHex("bad data", data[:n])
 			return
 		}
 
 		if n == int(data[1]+3) { //we received all data (data[1] is header length field)
-			if config.LogHexDump == true {
-				log.Printf("Received %d bytes data", n)
-				logHex(data[:n])
-			}
+			log.Printf("Received %d bytes data", n)
+			logHex("data", data[:n])
+
 			if !isValidReceiveChecksum(data[:n]) {
 				log.Println("Checksum received false!")
 				return

@@ -18,9 +18,9 @@ func (m mLogger) Write(p []byte) (n int, err error) {
 	return len(p), nil
 }
 
-func logHex(command []byte) {
+func logHex(name string, command []byte) {
 	if config.LogHexDump {
-		log.Printf("%X\n", command)
+		log.Printf("%s: %X\n", name, command)
 	}
 }
 
