@@ -13,15 +13,15 @@ BINARY_MIPSUPX=$(BINARY_NAME)_MIPSUPX
 all: build build-rpi build-linux build-mips upx compilesquash
 
 build: 
-	$(GOBUILD) -o $(BINARY_NAME) -v
+	$(GOBUILD) -o dist/$(BINARY_NAME) -v
 test: 
 	$(GOTEST) -v ./...
 clean: 
 	$(GOCLEAN)
 	rm -f dist/*
 run:
-	$(GOBUILD) -o $(BINARY_NAME) -v ./...
-	./$(BINARY_NAME)
+	$(GOBUILD) -o dist/$(BINARY_NAME) -v ./...
+	./dist/$(BINARY_NAME)
 build-linux:
 	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 $(GOBUILD) -o dist/$(BINARY_UNIX)
 build-mips:
@@ -37,3 +37,8 @@ compilesquash:
 	mksquashfs OS/RootFS dist/openwrt-ar71xx-generic-cus531-16M-rootfs-squashfs.bin -comp xz -noappend -always-use-fragments
 fakeserial:
 	socat -d -d pty,raw,echo=0 pty,raw,echo=0
+install:
+	mkdir -p /etc/goheishamon
+	cp config.yaml.example /etc/goheishamon/config.yaml
+	cp topics.yaml /etc/goheishamon/topics.yaml
+	cp ./dist/$(BINARY_NAME) /usr/bin/goheishamon

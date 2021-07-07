@@ -1,0 +1,9 @@
+[Unit]
+Description=Panasonic Aquarea MQTT bridge app 
+
+[Service]
+ExecStart=/usr/bin/goheishamon
+WorkingDirectory=/etc/goheishamon
+
+[Install]
+WantedBy=multi-user.target
