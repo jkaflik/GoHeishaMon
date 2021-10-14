@@ -23,6 +23,7 @@ type topicData struct {
 	Min            int      `yaml:"min"`
 	Max            int      `yaml:"max"`
 	Step           int      `yaml:"step"`
+	StateClass     string   `yaml:"stateClass"`
 	currentValue   string
 }
 

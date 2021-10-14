@@ -60,6 +60,7 @@ type mqttNumber struct {
 type mqttSensor struct {
 	Name              string `json:"name,omitempty"`
 	StateTopic        string `json:"state_topic"`
+	StateClass        string `json:"state_class"`
 	AvailabilityTopic string `json:"availability_topic,omitempty"`
 	UnitOfMeasurement string `json:"unit_of_measurement,omitempty"`
 	DeviceClass       string `json:"device_class,omitempty"`
@@ -110,10 +111,11 @@ func getDeviceClass(unit string) string {
 	return ""
 }
 
-func encodeSensor(sensorName, deviceID, unit string) (topic string, data []byte, err error) {
+func encodeSensor(sensorName, deviceID, unit, stateClass string) (topic string, data []byte, err error) {
 	var s mqttSensor
 	s.Name = strings.ReplaceAll(sensorName, "_", " ")
 	s.StateTopic = getStatusTopic(sensorName)
+	s.StateClass = stateClass
 	s.AvailabilityTopic = config.mqttWillTopic
 	s.UnitOfMeasurement = unit
 	s.DeviceClass = getDeviceClass(unit)
@@ -231,7 +233,12 @@ func publishDiscoveryTopics(mclient mqtt.Client) {
 			if len(value.Values) == 2 && (value.Values[0] == "Off" || value.Values[0] == "Disabled" || value.Values[0] == "Inactive") {
 				topic, data, err = encodeBinarySensor(value.SensorName, config.DeviceName, value.Values[1], value.Values[0])
 			} else {
-				topic, data, err = encodeSensor(value.SensorName, config.DeviceName, value.DisplayUnit)
+				stateClass := "measurement"
+				if len(value.StateClass) > 0 {
+					stateClass = value.StateClass
+				}
+
+				topic, data, err = encodeSensor(value.SensorName, config.DeviceName, value.DisplayUnit, stateClass)
 			}
 		}
 		if err != nil {

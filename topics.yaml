@@ -72,10 +72,12 @@
   decodeFunction: getWord
   decodeOffset: 182
   displayUnit: h
+  stateClass: total_increasing
 - sensorName: Operations_Counter
   decodeFunction: getWord
   decodeOffset: 179
   displayUnit: Counter
+  stateClass: total_increasing
 - sensorName: Main_Schedule_State
   decodeFunction: getBit1and2
   encodeFunction: setBit1and2
@@ -175,11 +177,13 @@
   decodeOffset: 38
   displayUnit: °C
 # No thermostat
-#    min: -5
-#    max: 5
+# min: -5
+# max: 5
 # With thermostat
-  min: 10
-  max: 30
+#  min: 10
+#  max: 30
+  min: -5
+  max: 5
   step: 1
 - sensorName: Z1_Cool_Request_Temp
   decodeFunction: getIntMinus128
@@ -235,11 +239,13 @@
   decodeOffset: 40
   displayUnit: °C
 # No thermostat
-#    min: -5
-#    max: 5
+# min: -5
+# max: 5
 # With thermostat
-  min: 10
-  max: 30
+# min: 10
+# max: 30
+  min: -5
+  max: 5
   step: 1
 - sensorName: Z2_Cool_Request_Temp
   decodeFunction: getIntMinus128
@@ -250,8 +256,10 @@
 #   min: -5
 #   max: 5
 # With thermostat
-  min: 18
-  max: 35
+# min: 18
+# max: 35
+  min: 5
+  max: -5
   step: 1
 - sensorName: Z1_Water_Temp
   decodeFunction: getIntMinus128
@@ -281,10 +289,12 @@
   decodeFunction: getIntMinus128
   decodeOffset: 147
   displayUnit: °C
+  stateClass: total
 - sensorName: Z2_Water_Target_Temp
   decodeFunction: getIntMinus128
   decodeOffset: 148
   displayUnit: °C
+  stateClass: total
 - sensorName: Error
   decodeFunction: getErrorInfo
   displayUnit: ErrorState
@@ -569,10 +579,12 @@
   decodeFunction: getWord
   decodeOffset: 185
   displayUnit: h
+  stateClass: total_increasing
 - sensorName: DHW_Heater_Operations_Hours
   decodeFunction: getWord
   decodeOffset: 188
   displayUnit: h
+  stateClass: total_increasing
 - sensorName: Heat_Pump_Model
   decodeFunction: getModel
   decodeOffset: 132
