@@ -1,0 +1,9 @@
+[Unit]
+Description=Panasonic Aquarea MQTT bridge app 
+
+[Service]
+ExecStart=/usr/bin/heatpump2mqtt
+WorkingDirectory=/etc/heatpump2mqtt
+
+[Install]
+WantedBy=multi-user.target

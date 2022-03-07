@@ -1,4 +1,4 @@
-module github.com/rondoval/GoHeishaMon
+module github.com/jkaflik/heatpump2mqtt
 
 go 1.14
 

@@ -1,5 +1,6 @@
 /config
 /dist
-GoHeishaMon.exe
 config.yaml
-.idea
+/.idea
+/.vscode
+*.iml

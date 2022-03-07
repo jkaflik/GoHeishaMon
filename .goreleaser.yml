@@ -1,0 +1,71 @@
+project_name: heatpump2mqtt
+
+before:
+  hooks:
+    - go mod tidy
+    - go test ./...
+builds:
+  - main: ./cmd/heatpump2mqtt
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+#      - darwin
+    goarch:
+      - amd64
+      - 386
+      - arm
+      - arm64
+    goarm:
+      - 7
+
+archives:
+  - name_template: "{{ .ProjectName }}_v{{ .Version }}_{{ .Os }}_{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}"
+    replacements:
+      darwin: Darwin
+      linux: Linux
+      386: i386
+      amd64: x86_64
+    files:
+      - none*
+
+checksum:
+  name_template: 'checksums.txt'
+
+dockers:
+  - image_templates:
+      - ghcr.io/jkaflik/{{.ProjectName}}:v{{ .Version }}-amd64
+    use: buildx
+    dockerfile: Dockerfile
+    build_flag_templates:
+      - "--platform=linux/amd64"
+
+  - image_templates:
+      - ghcr.io/jkaflik/{{.ProjectName}}:v{{ .Version }}-arm7
+    use: buildx
+    dockerfile: Dockerfile
+    goarch: arm
+    goarm: 7
+    build_flag_templates:
+      - "--platform=linux/arm/v7"
+
+  - image_templates:
+      - ghcr.io/jkaflik/{{.ProjectName}}:v{{ .Version }}-arm64
+    use: buildx
+    dockerfile: Dockerfile
+    goarch: arm64
+    build_flag_templates:
+      - "--platform=linux/arm64/v8"
+
+docker_manifests:
+  # github
+  - name_template: ghcr.io/jkaflik/{{.ProjectName}}:v{{ .Version }}
+    image_templates:
+      - ghcr.io/jkaflik/{{.ProjectName}}:v{{ .Version }}-amd64
+      - ghcr.io/jkaflik/{{.ProjectName}}:v{{ .Version }}-arm64
+      - ghcr.io/jkaflik/{{.ProjectName}}:v{{ .Version }}-arm7
+  - name_template: ghcr.io/jkaflik/{{.ProjectName}}:latest
+    image_templates:
+      - ghcr.io/jkaflik/{{.ProjectName}}:v{{ .Version }}-amd64
+      - ghcr.io/jkaflik/{{.ProjectName}}:v{{ .Version }}-arm64
+      - ghcr.io/jkaflik/{{.ProjectName}}:v{{ .Version }}-arm7
